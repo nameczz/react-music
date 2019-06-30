@@ -1,4 +1,4 @@
-'use strict';
+
 
 const fs = require('fs');
 const isWsl = require('is-wsl');
@@ -331,6 +331,15 @@ module.exports = function(webpackEnv) {
                 name: 'static/media/[name].[hash:8].[ext]',
               },
             },
+              // Process Stylus with Babel.
+            {
+              test: /\.styl$/,
+              use: [
+                require.resolve('style-loader'),
+                require.resolve('css-loader'),
+                require.resolve('stylus-loader')
+          ]
+        },
             // Process application JS with Babel.
             // The preset includes JSX, Flow, TypeScript, and some ESnext features.
             {
@@ -472,6 +481,7 @@ module.exports = function(webpackEnv) {
             // Make sure to add the new loader(s) before the "file" loader.
           ],
         },
+       
       ],
     },
     plugins: [
