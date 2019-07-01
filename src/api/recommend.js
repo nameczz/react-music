@@ -3,7 +3,7 @@ import { commonParams, options } from './config'
 import axios from 'axios'
 
 const debug = process.env.NODE_ENV !== 'production'
-export function getRecommand() {
+export function getRecommend() {
   const url =
     'https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg'
 

@@ -1,14 +1,22 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import './index.css'
 import './common/stylus/index.styl'
 import MHeader from './components/MHeader/index'
+import Tab from './components/Tab/index'
+// router
+import Recommend from './pages/Recommend'
 // import * as serviceWorker from './serviceWorker'
 
 ReactDOM.render(
-  <div>
+  <Router>
     <MHeader />
-  </div>,
+    <Tab />
+    <Switch>
+      <Route path="/recommend" component={Recommend} />
+    </Switch>
+  </Router>,
   document.getElementById('root')
 )
 
