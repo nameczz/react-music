@@ -1,22 +1,40 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import { createStore, applyMiddleware, compose } from 'redux'
+import thunk from 'redux-thunk' // 中间件 redux-thunk中间件，改造store.dispatch，使得后者可以接受函数作为参数。
+import { Provider } from 'react-redux' // 路由关联redux
 import './index.css'
 import './common/stylus/index.styl'
+import Reducers from './redux/reducers'
+
 import MHeader from './components/MHeader/index'
 import Tab from './components/Tab/index'
 // router
 import Recommend from './pages/Recommend'
+import Disc from './pages/Recommend/disc'
 // import * as serviceWorker from './serviceWorker'
 
+const store = createStore(
+  Reducers,
+  compose(
+    applyMiddleware(thunk),
+    window.devToolsExtension ? window.devToolsExtension() : f => f
+  )
+)
+
 ReactDOM.render(
-  <Router>
-    <MHeader />
-    <Tab />
-    <Switch>
-      <Route path="/recommend" component={Recommend} />
-    </Switch>
-  </Router>,
+  <Provider store={store}>
+    <Router>
+      <MHeader />
+      <Tab />
+      <Switch>
+        <Route path="/" exact component={Recommend} />
+        <Route path="/recommend" exact component={Recommend} />
+        <Route path="/recommend/:id" component={Disc} />
+      </Switch>
+    </Router>
+  </Provider>,
   document.getElementById('root')
 )
 

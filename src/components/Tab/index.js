@@ -1,6 +1,6 @@
 import React from 'react'
 import { NavLink, withRouter } from 'react-router-dom'
-import { Tabs, WhiteSpace } from 'antd-mobile'
+import { Tabs } from 'antd-mobile'
 import './index.styl'
 
 const tabs = [
@@ -24,7 +24,6 @@ class Tab extends React.Component {
   }
 
   activeTab = (match, location) => {
-    console.log(match, location)
     if (!match) {
       return false
     }
@@ -63,7 +62,6 @@ class Tab extends React.Component {
           )}
           onChange={this.handleTabChange}
         />
-        <WhiteSpace />
       </div>
     )
   }
