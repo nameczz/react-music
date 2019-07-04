@@ -5,7 +5,6 @@ import { connect } from 'react-redux'
 import { saveDisc } from '@/redux/music.redux'
 import { getRecommend, getdiscList } from 'api/recommend'
 import { ERR_OK } from 'api/config'
-import Scroll from 'components/Scroll'
 import BetterScroll from 'components/BetterScroll'
 import './index.styl'
 
@@ -59,7 +58,7 @@ class Recommend extends React.Component {
   render() {
     const content = () => {
       return (
-        <div className="recommend-content" style={{ width: this.state.width }}>
+        <div style={{ width: this.state.width }}>
           {this.state.recommends.length > 0 ? (
             <Carousel infinite>
               {this.state.recommends.map(music => {
@@ -111,42 +110,13 @@ class Recommend extends React.Component {
         </div>
       )
     }
-
-    // let index = 0
-    // const row = (rowData, sectionID, rowID) => {
-    //   if (!this.state.discList.length) {
-    //     return <div>nothing</div>
-    //   }
-    //   const obj = this.state.discList[index++]
-    //   return (
-    //     <div
-    //       className="item"
-    //       key={rowID}
-    //       onClick={this.handleRowClick}
-    //       data-disc={JSON.stringify(obj)}
-    //     >
-    //       <div className="icon">
-    //         <img alt="song" width="60" height="60" src={obj.imgurl} />
-    //       </div>
-    //       <div className="text">
-    //         <h2 className="name">{obj.creator.name}</h2>
-    //         <p className="desc">{obj.dissname}</p>
-    //       </div>
-    //     </div>
-    //   )
-    // }
     if (!this.state.discList.length) {
       return null
     }
     return (
       <div className="recommend">
-        <BetterScroll children={content} />
+        <BetterScroll className="recommend-content" children={content()} />
       </div>
-      // <Scroll
-      //   listHeader={listHeader}
-      //   row={row}
-      //   dataSourceLen={this.state.discList.length}
-      // />
     )
   }
 }

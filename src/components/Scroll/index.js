@@ -19,7 +19,7 @@ function MyBody(props) {
   )
 }
 
-// props: 必须: dataSourceLen listHeader row 可选: height  customBodyFunc
+// props: 必须: dataSourceLen listHeader row 可选: height  customBodyFunc handleScrollEvent
 class Scroll extends React.Component {
   constructor(props) {
     super(props)
@@ -53,7 +53,14 @@ class Scroll extends React.Component {
   }
 
   render() {
-    const { listHeader, row, customBodyFunc } = this.props
+    const {
+      listHeader,
+      row,
+      customBodyFunc,
+      handleScrollEvent = () => {
+        console.log('scroll')
+      }
+    } = this.props
     return (
       <ListView
         ref={el => (this.lv = el)}
@@ -70,9 +77,7 @@ class Scroll extends React.Component {
           height: this.state.height,
           overflow: 'auto'
         }}
-        onScroll={() => {
-          console.log('scroll')
-        }}
+        onScroll={handleScrollEvent}
         scrollRenderAheadDistance={500}
       />
     )
