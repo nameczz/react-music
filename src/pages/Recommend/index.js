@@ -2,7 +2,7 @@
 import React from 'react'
 import { Carousel } from 'antd-mobile'
 import { connect } from 'react-redux'
-import { saveDisc } from '@/redux/music.redux'
+import { saveDisc } from '@/redux/disc.redux'
 import { getRecommend, getdiscList } from 'api/recommend'
 import { ERR_OK } from 'api/config'
 import BetterScroll from 'components/BetterScroll'

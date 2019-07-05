@@ -1,12 +1,18 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import SongList from 'components/SongList'
 import BetterScroll from 'components/BetterScroll'
+import { selectPlay } from '@/redux/playList.redux'
 
 import './index.styl'
 
 const TITLE_HEIGHT = 40
 
+@connect(
+  state => state,
+  { selectPlay }
+)
 @withRouter
 class MusicList extends React.Component {
   constructor(props) {
@@ -59,13 +65,17 @@ class MusicList extends React.Component {
     this.props.history.goBack()
   }
 
+  handleSongClick = (song, index) => {
+    this.props.selectPlay(this.props.songs, index)
+  }
+
   render() {
     const { title, bgImage, songs } = this.props
     console.log(songs.length)
     const content = () => {
       return (
         <div className="song-list-wrapper">
-          <SongList songs={songs} />
+          <SongList songs={songs} handleSongClick={this.handleSongClick} />
         </div>
       )
     }

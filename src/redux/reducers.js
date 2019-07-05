@@ -1,6 +1,8 @@
-import { music } from './music.redux.js'
+import { disc } from './disc.redux'
+import { playList } from './playList.redux'
 import { combineReducers } from 'redux'
 
 export default combineReducers({
-  music
+  disc,
+  playList
 })

@@ -2,7 +2,7 @@ const SAVE_DISC = 'SAVE_DISC'
 const initState = {
   disc: {}
 }
-export function music(state = initState, action) {
+export function disc(state = initState, action) {
   switch (action.type) {
     case SAVE_DISC:
       return {

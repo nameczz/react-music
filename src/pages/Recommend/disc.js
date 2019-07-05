@@ -18,7 +18,7 @@ class RecommendDetail extends React.Component {
     }
   }
   componentWillMount() {
-    if (!this.props.music.disc.dissid) {
+    if (!this.props.disc.disc.dissid) {
       this.props.history.push('/recommend')
       return
     }
@@ -26,11 +26,11 @@ class RecommendDetail extends React.Component {
   }
 
   getSongList() {
-    if (!this.props.music.disc.dissid) {
+    if (!this.props.disc.disc.dissid) {
       this.$router.push('/recommend')
       return
     }
-    getSongList(this.props.music.disc.dissid)
+    getSongList(this.props.disc.disc.dissid)
       .then(res => {
         if (res.code === ERR_OK) {
           processSongsUrl(this._normalizeSongs(res.cdlist[0].songlist)).then(
@@ -59,7 +59,7 @@ class RecommendDetail extends React.Component {
   }
 
   render() {
-    let disc = this.props.music.disc
+    let disc = this.props.disc.disc
     return (
       <div className="detail">
         {this.state.songs.length > 0 ? (

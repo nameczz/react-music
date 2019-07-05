@@ -6,9 +6,15 @@ class SongList extends React.Component {
     return (
       <div className="song-list">
         <ul>
-          {this.props.songs.map(song => {
+          {this.props.songs.map((song, index) => {
             return (
-              <li className="item" key={song.id}>
+              <li
+                className="item"
+                key={song.id}
+                onClick={() => {
+                  this.props.handleSongClick(song, index)
+                }}
+              >
                 <div className="content">
                   <h2 className="name">{song.name}</h2>
                   <p className="desc">{`${song.singer} - ${song.album}`}</p>
@@ -23,7 +29,8 @@ class SongList extends React.Component {
 }
 
 SongList.propType = {
-  songs: PropTypes.array.isRequired
+  songs: PropTypes.array.isRequired,
+  handleSongClick: PropTypes.func.isRequired
 }
 
 export default SongList

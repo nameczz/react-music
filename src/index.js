@@ -13,6 +13,7 @@ import Tab from './components/Tab/index'
 // router
 import Recommend from './pages/Recommend'
 import Disc from './pages/Recommend/disc'
+import Player from './components/Player'
 // import * as serviceWorker from './serviceWorker'
 
 const store = createStore(
@@ -33,6 +34,7 @@ ReactDOM.render(
         <Route path="/recommend" exact component={Recommend} />
         <Route path="/recommend/:id" component={Disc} />
       </Switch>
+      <Player />
     </Router>
   </Provider>,
   document.getElementById('root')

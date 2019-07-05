@@ -161,7 +161,6 @@ module.exports = function(proxy, allowedHost) {
       })
       apiRouter.get('/search', function(req, res) {
         const url = 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp'
-        console.log('in')
         axios
           .get(url, {
             headers: {
@@ -179,7 +178,6 @@ module.exports = function(proxy, allowedHost) {
       })
 
       apiRouter.post('/getPurlUrl', bodyParser.json(), function(req, res) {
-        console.log(res)
         const url = 'https://u.y.qq.com/cgi-bin/musicu.fcg'
         axios
           .post(url, req.body, {
