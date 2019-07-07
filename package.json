@@ -40,6 +40,7 @@
     "jest-watch-typeahead": "0.3.0",
     "js-base64": "^2.5.1",
     "jsonp": "^0.2.1",
+    "lyric-parser": "^1.0.1",
     "mini-css-extract-plugin": "0.5.0",
     "optimize-css-assets-webpack-plugin": "5.0.1",
     "pnp-webpack-plugin": "1.2.1",

@@ -7,24 +7,24 @@ class BetterScroll extends React.Component {
       this.initScroll()
     }, 20)
   }
-  // componentDidUpdate(prevProps, prevState, snapshot) {
-  //   // 如果我们 snapshot 有值，说明我们刚刚添加了新的 items，
-  //   // 调整滚动位置使得这些新 items 不会将旧的 items 推出视图。
-  //   //（这里的 snapshot 是 getSnapshotBeforeUpdate 的返回值）
-  //   console.log(prevProps, this.props)
-  //   this.refresh()
-  // }
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    // 如果我们 snapshot 有值，说明我们刚刚添加了新的 items，
+    // 调整滚动位置使得这些新 items 不会将旧的 items 推出视图。
+    //（这里的 snapshot 是 getSnapshotBeforeUpdate 的返回值）
+    console.log('bs-update')
+    setTimeout(()=>{
+      this.refresh()
+    },this.refreshTime)
+  }
   initScroll() {
     if (!this.refs.wrapper) {
       return
     }
-    console.log(this.refs.wrapper)
-    console.log(this.props)
+
     this.scroll = new BSroll(this.refs.wrapper, {
       probeType: this.props.probeType,
       click: this.props.click
     })
-    console.log(this.scroll)
     if (this.props.handleScroll) {
       let me = this
       this.scroll.on('scroll', pos => {
@@ -69,7 +69,6 @@ class BetterScroll extends React.Component {
 
 BetterScroll.propTypes = {
   probeType: PropTypes.number,
-  data: PropTypes.array,
   click: PropTypes.bool,
   handleScroll: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
   pullup: PropTypes.bool,
@@ -82,7 +81,6 @@ BetterScroll.propTypes = {
 BetterScroll.defaultProps = {
   probeType: 1,
   click: true,
-  data: null,
   handleScroll: false,
   pullup: false,
   beforeScroll: false,
