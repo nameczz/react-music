@@ -1,20 +1,18 @@
 import React from 'react'
 import BSroll from 'better-scroll'
 import PropTypes from 'prop-types'
-class BetterScroll extends React.Component {
+class BetterScroll extends React.PureComponent {
   componentDidMount() {
     setTimeout(() => {
       this.initScroll()
     }, 20)
   }
+
   componentDidUpdate(prevProps, prevState, snapshot) {
-    // 如果我们 snapshot 有值，说明我们刚刚添加了新的 items，
-    // 调整滚动位置使得这些新 items 不会将旧的 items 推出视图。
-    //（这里的 snapshot 是 getSnapshotBeforeUpdate 的返回值）
-    console.log('bs-update')
-    setTimeout(()=>{
+    // 可能又不必要的更新 因为父组件更新
+    setTimeout(() => {
       this.refresh()
-    },this.refreshTime)
+    }, this.refreshTime)
   }
   initScroll() {
     if (!this.refs.wrapper) {

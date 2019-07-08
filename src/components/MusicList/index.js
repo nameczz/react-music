@@ -33,13 +33,11 @@ class MusicList extends React.Component {
   }
 
   handleScroll = pos => {
-    console.log(pos)
     const scrollY = pos.y
     let translateY = Math.max(this.minTranslateY, scrollY)
     let zIndex = 0
     let scale = 1
     const percent = Math.abs(scrollY / this.imageHeight)
-    console.log(scrollY)
     this.refs.layer.style.transform = `translate3d(0, ${translateY}px, 0)`
     if (scrollY > 0) {
       scale = 1 + percent
@@ -66,6 +64,7 @@ class MusicList extends React.Component {
   }
 
   handleSongClick = (song, index) => {
+    console.log('song---click')
     this.props.selectPlay(this.props.songs, index)
   }
 
