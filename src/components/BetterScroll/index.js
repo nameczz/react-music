@@ -1,7 +1,7 @@
 import React from 'react'
 import BSroll from 'better-scroll'
 import PropTypes from 'prop-types'
-class BetterScroll extends React.PureComponent {
+class BetterScroll extends React.Component {
   componentDidMount() {
     setTimeout(() => {
       this.initScroll()

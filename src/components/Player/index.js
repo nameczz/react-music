@@ -9,10 +9,11 @@ import {
 } from '@/redux/playList.redux'
 import BetterScroll from 'components/BetterScroll'
 import ProgressBar from 'components/ProgressBar'
+import ProgressCircle from 'components/ProgressCircle'
 import Lyric from 'lyric-parser'
 import { playMode } from 'common/js/config'
 import { shuffle } from 'common/js/util'
-
+import { Transition, CSSTransition } from 'react-transition-group'
 import './index.styl'
 
 @connect(
@@ -31,6 +32,10 @@ class Player extends React.Component {
       playingLyric: '',
       iconMode: playMode.sequ
     }
+    this.bsRef = React.createRef()
+    this.audioRef = React.createRef()
+    this.middleLeftRef = React.createRef()
+    this.lyricLineRef = React.createRef()
     this.touch = {}
   }
 
@@ -48,7 +53,7 @@ class Player extends React.Component {
 
   componentDidUpdate(prevProps) {
     const { playing: playingState } = this.props.playList
-    const audio = this.refs.audio
+    const audio = this.audioRef.current
     if (audio && playingState !== prevProps.playList.playing) {
       console.log(audio, playingState)
       playingState ? audio.play() : audio.pause()
@@ -86,12 +91,12 @@ class Player extends React.Component {
     )
     this.touch.percent = Math.abs(width / window.innerWidth)
 
-    const lyricListDom = this.refs.lyricList.refs.wrapper
+    const lyricListDom = this.bsRef.current.refs.wrapper
     // vue组件通过$el
     lyricListDom.style.transform = `translate3d(${width}px, 0, 0)`
     lyricListDom.style.transitionDuration = 0
-    this.refs.middleL.style.opacity = 1 - this.touch.percent
-    this.refs.middleL.style.transitionDuration = 0
+    this.middleLeftRef.current.style.opacity = 1 - this.touch.percent
+    this.middleLeftRef.current.style.transitionDuration = 0
   }
 
   middleTouchEnd = e => {
@@ -124,12 +129,12 @@ class Player extends React.Component {
       }
     }
     const time = 300
-    const lyricListDom = this.refs.lyricList.refs.wrapper
+    const lyricListDom = this.bsRef.current.refs.wrapper
 
     lyricListDom.style.transform = `translate3d(${offsetWidth}px, 0, 0)`
     lyricListDom.style.transitionDuration = `${time}ms`
-    this.refs.middleL.style.opacity = opacity
-    this.refs.middleL.style.transitionDuration = `${time}ms`
+    this.middleLeftRef.current.style.opacity = opacity
+    this.middleLeftRef.current.style.transitionDuration = `${time}ms`
   }
 
   getLyric = () => {
@@ -163,17 +168,20 @@ class Player extends React.Component {
     if (!this.props.playList.fullScreen) {
       return
     }
-    console.log('in---handleLyric')
+    console.log('in---handleLyric', this.bsRef)
     this.setState({
       currentLineNum: lineNum,
       playingLyric: txt
     })
-
+    if (!this.bsRef.current) {
+      return
+    }
     if (lineNum > 5) {
-      let lineEl = this.refs.lyricLine && this.refs.lyricLine[lineNum - 5]
-      this.refs.lyricList.scrollToElement(lineEl, 1000) // bs实例
+      let lineEl =
+        this.lyricLineRef.current && this.lyricLineRef.current[lineNum - 5]
+      this.bsRef.current.scrollToElement(lineEl, 1000) // bs实例
     } else {
-      this.refs.lyricList.scrollTo(0, 0, 1000)
+      this.bsRef.current.scrollTo(0, 0, 1000)
     }
   }
 
@@ -219,7 +227,7 @@ class Player extends React.Component {
 
   progressBarChange = percent => {
     const currentTime = this.currentSong.duration * percent
-    this.refs.audio.currentTime = currentTime
+    this.audioRef.current.currentTime = currentTime
     if (!this.props.playList.playing) {
       this.togglePlaying()
     }
@@ -255,8 +263,8 @@ class Player extends React.Component {
     }
   }
   loop() {
-    this.refs.audio.currentTime = 0
-    this.refs.audio.play()
+    this.audioRef.current.currentTime = 0
+    this.audioRef.current.play()
     if (this.state.currentLyric) {
       this.state.currentLyric.seek(0)
     }
@@ -313,7 +321,7 @@ class Player extends React.Component {
       currentTime
     } = this.state
     const newSong = playList[currentIndex] || {}
-    if (!fullScreen) {
+    if (!playList.length) {
       return null
     }
     if (
@@ -325,11 +333,13 @@ class Player extends React.Component {
         currentLyric.stop() // 先停掉旧的歌词
       }
       setTimeout(() => {
-        this.refs.audio.play()
+        this.audioRef.current.play()
         this.getLyric()
       }, 1000)
     }
-    const percent = currentTime / this.currentSong.duration
+    const percent = this.currentSong
+      ? currentTime / this.currentSong.duration
+      : 0
 
     const lyricList = () => {
       return (
@@ -339,7 +349,7 @@ class Player extends React.Component {
               {currentLyric.lines.map((line, index) => {
                 return (
                   <p
-                    ref="lyricLine"
+                    ref={this.lyricLineRef}
                     key={index}
                     className={
                       currentLineNum === index ? 'current text' : 'text'
@@ -354,11 +364,11 @@ class Player extends React.Component {
         </div>
       )
     }
+    const cdStatus = playing ? 'play' : 'pause'
 
     const normalPlayer = () => {
       const disableCls = this.state.songReady ? '' : 'ready' // icon status
       const playIcon = playing ? 'icon-pause' : 'icon-play'
-      const cdStatus = playing ? 'play' : 'pause'
       return (
         <div className="normal-player">
           <div className="background">
@@ -382,7 +392,7 @@ class Player extends React.Component {
             onTouchMove={this.middleTouchMove}
             className="middle"
           >
-            <div className="middle-l" ref="middleL">
+            <div className="middle-l" ref={this.middleLeftRef}>
               <div className="cd-wrapper" ref="cdWrapper">
                 <div className={`${cdStatus} cd`}>
                   <img
@@ -399,7 +409,7 @@ class Player extends React.Component {
             <BetterScroll
               children={lyricList()}
               className="middle-r"
-              ref="lyricList"
+              ref={this.bsRef}
             />
           </div>
           <div className="bottom">
@@ -442,12 +452,50 @@ class Player extends React.Component {
         </div>
       )
     }
+    const miniPlayer = () => {
+      const miniIcon = this.props.playList.playing
+        ? 'icon-pause-mini'
+        : 'icon-play-mini'
+      const circleIcon = () => {
+        return (
+          <i onClick={this.togglePlaying} className={`${miniIcon} icon-mini`} />
+        )
+      }
+      return (
+        <CSSTransition timeout={800} classNames="my-node" in={!fullScreen}>
+          <div className="mini-player">
+            <div
+              className="icon"
+              onClick={() => this.props.saveFullScreen(true)}
+            >
+              <img
+                className={cdStatus}
+                alt="song"
+                src={this.currentSong.image}
+                height="40"
+                width="40"
+              />
+            </div>
+            <div className="text">
+              <h2 className="name">{this.currentSong.name}</h2>
+              <p className="desc">{this.currentSong.singer}</p>
+            </div>
+            <div className="control">
+              <ProgressCircle children={circleIcon()} />
+            </div>
+            <div className="control">
+              <i className="icon-playlist" />
+            </div>
+          </div>
+        </CSSTransition>
+      )
+    }
     return (
       <div className="player">
-        {fullScreen ? normalPlayer() : null}
+        {fullScreen ? normalPlayer() : miniPlayer()}
         {this.currentSong ? (
           <audio
-            ref="audio"
+            ref={this.audioRef}
             onCanPlay={this.ready}
             onEnded={this.end}
             onTimeUpdate={this.updateTime}

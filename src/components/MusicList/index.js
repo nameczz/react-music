@@ -21,9 +21,12 @@ class MusicList extends React.Component {
       height: null,
       top: 0
     }
+    this.bgImageRef = React.createRef()
+    this.layerRef = React.createRef()
+    this.playRef = React.createRef()
   }
   componentDidMount() {
-    this.imageHeight = this.refs.bgImage.clientHeight
+    this.imageHeight = this.bgImageRef.current.clientHeight
     this.minTranslateY = -this.imageHeight + TITLE_HEIGHT
 
     this.setState({
@@ -38,25 +41,25 @@ class MusicList extends React.Component {
     let zIndex = 0
     let scale = 1
     const percent = Math.abs(scrollY / this.imageHeight)
-    this.refs.layer.style.transform = `translate3d(0, ${translateY}px, 0)`
+    this.layerRef.current.style.transform = `translate3d(0, ${translateY}px, 0)`
     if (scrollY > 0) {
       scale = 1 + percent
       zIndex = 10
-      this.refs.bgImage.style.paddingTop = '80%'
+      this.bgImageRef.current.style.paddingTop = '80%'
     }
 
     if (scrollY < this.minTranslateY) {
       zIndex = 10
-      this.refs.bgImage.style.paddingTop = 0
-      this.refs.bgImage.style.height = `${TITLE_HEIGHT}px`
-      this.refs.play.style.display = 'none'
+      this.bgImageRef.current.style.paddingTop = 0
+      this.bgImageRef.current.style.height = `${TITLE_HEIGHT}px`
+      this.playRef.current.style.display = 'none'
     } else {
-      this.refs.bgImage.style.paddingTop = '70%'
-      this.refs.bgImage.style.height = 0
-      this.refs.play.style.display = ''
+      this.bgImageRef.current.style.paddingTop = '70%'
+      this.bgImageRef.current.style.height = 0
+      this.playRef.current.style.display = ''
     }
-    this.refs.bgImage.style.zIndex = `${zIndex}`
-    this.refs.bgImage.style.transform = `scale(${scale})`
+    this.bgImageRef.current.style.zIndex = `${zIndex}`
+    this.bgImageRef.current.style.transform = `scale(${scale})`
   }
 
   handleBackClick = () => {
@@ -84,9 +87,9 @@ class MusicList extends React.Component {
           <i className="icon-back" />
         </div>
         <h1 className="title">{title}</h1>
-        <div className="bg-image" ref="bgImage">
+        <div className="bg-image" ref={this.bgImageRef}>
           <div className="play-wrapper">
-            <div className="play" ref="play">
+            <div className="play" ref={this.playRef}>
               <i className="icon-play" />
               <span className="text">随机播放</span>
             </div>
@@ -96,7 +99,7 @@ class MusicList extends React.Component {
             style={{ backgroundImage: `url(${bgImage})` }}
           />
         </div>
-        <div className="bg-layer" ref="layer" />
+        <div className="bg-layer" ref={this.layerRef} />
         <BetterScroll
           className="list"
           top={this.state.top}
