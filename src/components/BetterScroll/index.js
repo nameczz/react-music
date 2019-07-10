@@ -52,7 +52,6 @@ class BetterScroll extends React.Component {
   }
 
   render() {
-    console.log('bs-render')
     return (
       <div
         ref="wrapper"

@@ -13,7 +13,7 @@ const initState = {
   fullScreen: false,
   mode: playMode.sequence, // 播放模式
   currentIndex: -1, // 第几首
-  playing: false // 是否播放
+  playing: false // 是否播放,
 }
 export function playList(state = initState, action) {
   switch (action.type) {
@@ -23,9 +23,14 @@ export function playList(state = initState, action) {
     case SAVE_FULL_SCREEN:
     case SAVE_PLAYING_STATE:
     case SAVE_CURRENT_INDEX:
-      return {
+      const ret = {
         ...state,
         ...action.data
+      }
+      const currentSong = ret.playList[ret.currentIndex] || {}
+      return {
+        ...ret,
+        currentSong
       }
 
     default:

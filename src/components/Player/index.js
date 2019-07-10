@@ -10,6 +10,7 @@ import {
 import BetterScroll from 'components/BetterScroll'
 import ProgressBar from 'components/ProgressBar'
 import ProgressCircle from 'components/ProgressCircle'
+import PlayerList from 'components/PlayerList'
 import Lyric from 'lyric-parser'
 import { playMode } from 'common/js/config'
 import { shuffle } from 'common/js/util'
@@ -30,12 +31,14 @@ class Player extends React.Component {
       currentLineNum: 0,
       currentShow: 'cd',
       playingLyric: '',
-      iconMode: playMode.sequ
+      iconMode: playMode.sequence,
+      showPlayerList: false
     }
     this.bsRef = React.createRef()
     this.audioRef = React.createRef()
     this.middleLeftRef = React.createRef()
     this.lyricLineRef = React.createRef()
+    this.playListRef = React.createRef()
     this.touch = {}
   }
 
@@ -52,10 +55,12 @@ class Player extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { playing: playingState } = this.props.playList
+    const { playing: playingState, currentIndex } = this.props.playList
     const audio = this.audioRef.current
+    if (currentIndex !== prevProps.playList.currentIndex) {
+      this.getLyric()
+    }
     if (audio && playingState !== prevProps.playList.playing) {
-      console.log(audio, playingState)
       playingState ? audio.play() : audio.pause()
     }
   }
@@ -138,9 +143,8 @@ class Player extends React.Component {
   }
 
   getLyric = () => {
-    const { playing } = this.props.playList
-    console.log(this.currentSong)
-    this.currentSong
+    const { playing, currentSong } = this.props.playList
+    currentSong
       .getLyric()
       .then(lyric => {
         console.log(lyric)
@@ -168,7 +172,7 @@ class Player extends React.Component {
     if (!this.props.playList.fullScreen) {
       return
     }
-    console.log('in---handleLyric', this.bsRef)
+    // console.log('in---handleLyric', this.bsRef)
     this.setState({
       currentLineNum: lineNum,
       playingLyric: txt
@@ -226,7 +230,7 @@ class Player extends React.Component {
   }
 
   progressBarChange = percent => {
-    const currentTime = this.currentSong.duration * percent
+    const currentTime = this.props.playList.currentSong.duration * percent
     this.audioRef.current.currentTime = currentTime
     if (!this.props.playList.playing) {
       this.togglePlaying()
@@ -247,7 +251,9 @@ class Player extends React.Component {
   }
 
   resetCurrentIndex = list => {
-    let index = list.findIndex(song => song.id === this.currentSong.id)
+    let index = list.findIndex(
+      song => song.id === this.props.playList.currentSong.id
+    )
     this.props.saveCurrentIndex(index)
   }
 
@@ -281,7 +287,6 @@ class Player extends React.Component {
     } else {
       let index = currentIndex === 0 ? playList - 1 : currentIndex - 1
       this.props.saveCurrentIndex(index)
-      this.currentSong = playList[index]
       if (!playing) {
         this.props.savePlayingState(true)
       }
@@ -311,9 +316,20 @@ class Player extends React.Component {
     }
   }
 
+  showPlayerList = () => {
+    this.setState({
+      showPlayerList: true
+    })
+  }
+
   render() {
-    console.log('render')
-    const { playList, currentIndex, fullScreen, playing } = this.props.playList
+    const {
+      playList,
+      currentIndex,
+      fullScreen,
+      playing,
+      currentSong
+    } = this.props.playList
     const {
       currentLyric,
       currentLineNum,
@@ -324,22 +340,13 @@ class Player extends React.Component {
     if (!playList.length) {
       return null
     }
-    if (
-      newSong.id &&
-      (!this.currentSong || newSong.id !== this.currentSong.id)
-    ) {
-      this.currentSong = newSong
+    if (newSong.id && newSong.id !== currentSong.id) {
       if (currentLyric) {
         currentLyric.stop() // 先停掉旧的歌词
       }
-      setTimeout(() => {
-        this.audioRef.current.play()
-        this.getLyric()
-      }, 1000)
     }
-    const percent = this.currentSong
-      ? currentTime / this.currentSong.duration
-      : 0
+
+    const percent = currentTime / currentSong.duration
 
     const lyricList = () => {
       return (
@@ -373,7 +380,7 @@ class Player extends React.Component {
         <div className="normal-player">
           <div className="background">
             <img
-              src={this.currentSong.image}
+              src={currentSong.image}
               height="100%"
               width="100%"
               alt="song background"
@@ -383,8 +390,8 @@ class Player extends React.Component {
             <div className="back" onClick={this.back}>
               <i className="icon-back" />
             </div>
-            <h1 className="title">{this.currentSong.name}</h1>
-            <h2 className="subtitle">{this.currentSong.singer}</h2>
+            <h1 className="title">{currentSong.name}</h1>
+            <h2 className="subtitle">{currentSong.singer}</h2>
           </div>
           <div
             onTouchEnd={this.middleTouchEnd}
@@ -396,7 +403,7 @@ class Player extends React.Component {
               <div className="cd-wrapper" ref="cdWrapper">
                 <div className={`${cdStatus} cd`}>
                   <img
-                    src={this.currentSong.image}
+                    src={currentSong.image}
                     alt="currentsong"
                     className="image"
                   />
@@ -428,7 +435,7 @@ class Player extends React.Component {
                 />
               </div>
               <span className="time time-r">
-                {this.format(this.currentSong.duration)}
+                {this.format(currentSong.duration)}
               </span>
             </div>
             <div className="operators">
@@ -471,19 +478,19 @@ class Player extends React.Component {
               <img
                 className={cdStatus}
                 alt="song"
-                src={this.currentSong.image}
+                src={currentSong.image}
                 height="40"
                 width="40"
               />
             </div>
             <div className="text">
-              <h2 className="name">{this.currentSong.name}</h2>
-              <p className="desc">{this.currentSong.singer}</p>
+              <h2 className="name">{currentSong.name}</h2>
+              <p className="desc">{currentSong.singer}</p>
             </div>
             <div className="control">
               <ProgressCircle children={circleIcon()} />
             </div>
-            <div className="control">
+            <div className="control" onClick={this.showPlayerList}>
               <i className="icon-playlist" />
             </div>
           </div>
@@ -493,15 +500,16 @@ class Player extends React.Component {
     return (
       <div className="player">
         {fullScreen ? normalPlayer() : miniPlayer()}
-        {this.currentSong ? (
+        {currentSong ? (
           <audio
             ref={this.audioRef}
             onCanPlay={this.ready}
             onEnded={this.end}
             onTimeUpdate={this.updateTime}
-            src={this.currentSong.url}
+            src={currentSong.url}
           />
         ) : null}
+        <PlayerList show={this.state.showPlayerList} />
       </div>
     )
   }
