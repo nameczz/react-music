@@ -10,23 +10,7 @@
   z-index: 200;
   background-color: $color-background-d;
 
-  &.list-fade-enter-active, &.list-fade-leave-active {
-    transition: opacity 0.3s;
-
-    .list-wrapper {
-      transition: all 0.3s;
-    }
-  }
-
-  &.list-fade-enter, &.list-fade-leave-to {
-    opacity: 0;
-
-    .list-wrapper {
-      transform: translate3d(0, 100%, 0);
-    }
-  }
-
-  &.list-fade-enter, .list-wrapper {
+  .list-wrapper {
     position: absolute;
     left: 0;
     bottom: 0;
@@ -148,4 +132,36 @@
       color: $color-text-l;
     }
   }
+}
+
+.list-translate-enter {
+  transform: translate3d(0, 100%, 0);
+}
+
+.list-translate-enter-active {
+  transform: translate3d(0, 0, 0);
+  transition: all 300ms;
+}
+
+.list-translate-exit-active {
+  transform: translate3d(0, 100%, 0);
+  transition: all 300ms;
+}
+
+.list-fade-enter {
+  opacity: 0;
+}
+
+.list-fade-enter-active {
+  opacity: 1;
+  transition: opacity 300ms;
+}
+
+.list-fade-exit {
+  opacity: 1;
+}
+
+.list-fade-exit-active {
+  opacity: 0;
+  transition: opacity 300ms;
 }

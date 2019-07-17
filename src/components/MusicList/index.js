@@ -3,15 +3,14 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import SongList from 'components/SongList'
 import BetterScroll from 'components/BetterScroll'
-import { selectPlay } from '@/redux/playList.redux'
-
+import { selectPlay, randomPlay } from '@/redux/playList.redux'
 import './index.styl'
 
 const TITLE_HEIGHT = 40
 
 @connect(
   state => state,
-  { selectPlay }
+  { selectPlay, randomPlay }
 )
 @withRouter
 class MusicList extends React.Component {
@@ -68,7 +67,7 @@ class MusicList extends React.Component {
 
   handleSongClick = (song, index) => {
     console.log('song---click')
-    this.props.selectPlay(this.props.songs, index)
+    this.props.selectPlay({ playList: this.props.songs, index })
   }
 
   render() {
@@ -89,7 +88,13 @@ class MusicList extends React.Component {
         <h1 className="title">{title}</h1>
         <div className="bg-image" ref={this.bgImageRef}>
           <div className="play-wrapper">
-            <div className="play" ref={this.playRef}>
+            <div
+              className="play"
+              ref={this.playRef}
+              onClick={() => {
+                this.props.randomPlay({ playList: songs })
+              }}
+            >
               <i className="icon-play" />
               <span className="text">随机播放</span>
             </div>

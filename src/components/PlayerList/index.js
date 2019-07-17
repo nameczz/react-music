@@ -2,8 +2,19 @@ import React from 'react'
 import { playMode } from 'common/js/config'
 import { connect } from 'react-redux'
 import BetterScroll from 'components/BetterScroll'
+import { CSSTransition } from 'react-transition-group'
+import {
+  selectPlay,
+  savePlayingState,
+  saveCurrentIndex,
+  clearSongs
+} from '@/redux/playList.redux'
+import PropTypes from 'prop-types'
 import './index.styl'
-@connect(state => state)
+@connect(
+  state => state,
+  { selectPlay, savePlayingState, saveCurrentIndex, clearSongs }
+)
 class PlayerList extends React.Component {
   constructor(props) {
     super(props)
@@ -34,7 +45,6 @@ class PlayerList extends React.Component {
 
   scrollToCurrent = song => {
     const index = this.props.playList.playList.findIndex(v => song.id === v.id)
-    console.log(this.songRef)
     this.bsRef.current.scrollToElement(this.songRef.current[index], 300)
   }
 
@@ -65,23 +75,54 @@ class PlayerList extends React.Component {
     }
   }
 
-  render() {
-    if (!this.props.show) {
-      return null
+  deleteSong = e => {
+    // e.preventDefault()
+    e.stopPropagation()
+    console.log(e)
+    let songId = e.target.getAttribute('data-id')
+    console.log(songId)
+    const { playList, currentIndex, fullScreen, playing } = this.props.playList
+    let newPlayList = playList.filter(v => v.id !== +songId)
+    let index =
+      currentIndex === newPlayList.length ? currentIndex - 1 : currentIndex
+    this.props.selectPlay({ playList: newPlayList, index, fullScreen, playing })
+  }
+
+  handlePlayingState = index => {
+    const { currentIndex, playing } = this.props.playList
+    if (currentIndex === index) {
+      this.props.savePlayingState(!playing)
+      return
     }
+    this.props.saveCurrentIndex(index)
+    this.props.savePlayingState(true)
+  }
+
+  render() {
     const modeConfig = this.modeConfig()
     const sequenceList = () => {
       return (
         <ul>
-          {this.props.playList.sequenceList.map(song => {
+          {this.props.playList.sequenceList.map((song, index) => {
             return (
-              <li className="item" ref={this.songRef} key={song.id}>
+              <li
+                className="item"
+                ref={this.songRef}
+                key={song.id}
+                onClick={() => {
+                  this.handlePlayingState(index)
+                }}
+              >
                 <i className={`${this.getCurrentSong(song)} current`} />
                 <span className="text">{song.name}</span>
                 <span className="like">
                   <i className="icon-not-favorite" />
                 </span>
-                <span className="delet">
+                <span
+                  className="delete"
+                  onClick={this.deleteSong}
+                  data-id={song.id}
+                >
                   <i className="icon-delete" />
                 </span>
               </li>
@@ -91,27 +132,58 @@ class PlayerList extends React.Component {
       )
     }
     return (
-      <div className="playlist">
-        <div className="list-wrapper" onClick={e => e.stopPropagation()}>
-          <div className="list-header">
-            <h1 className="title">
-              <i className={`${modeConfig.icon} icon`} />
-              <span className="text">{modeConfig.name}</span>
-              <span className="clear">
-                <i className="icon-clear" />
-              </span>
-            </h1>
-          </div>
-          <BetterScroll
-            refreshTime={100}
-            className="list-content"
-            ref={this.bsRef}
-            children={sequenceList()}
-          />
+      <CSSTransition
+        timeout={300}
+        unmountOnExit
+        classNames="list-fade"
+        in={this.props.show}
+      >
+        <div className="playlist">
+          <CSSTransition
+            timeout={300}
+            dismissible
+            classNames="list-translate"
+            in={this.props.show}
+          >
+            <div className="list-wrapper">
+              <div className="list-header">
+                <h1 className="title">
+                  <i className={`${modeConfig.icon} icon`} />
+                  <span className="text">{modeConfig.name}</span>
+                  <span className="clear" onClick={this.props.clearSongs}>
+                    <i className="icon-clear" />
+                  </span>
+                </h1>
+              </div>
+              <BetterScroll
+                refreshTime={100}
+                className="list-content"
+                ref={this.bsRef}
+                children={sequenceList()}
+              />
+              <div className="list-operate">
+                <div className="add">
+                  <i className="icon-add" />
+                  <span className="text">添加歌曲到列表</span>
+                </div>
+              </div>
+              <div className="list-close" onClick={this.props.handleCloseList}>
+                关闭
+              </div>
+            </div>
+          </CSSTransition>
         </div>
-      </div>
+      </CSSTransition>
     )
   }
+}
+
+PlayerList.propTypes = {
+  show: PropTypes.bool
+}
+
+PlayerList.defaultProps = {
+  show: false
 }
 
 export default PlayerList

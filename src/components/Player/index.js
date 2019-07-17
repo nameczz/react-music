@@ -55,12 +55,19 @@ class Player extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { playing: playingState, currentIndex } = this.props.playList
+    const {
+      playing: playingState,
+      currentIndex,
+      playList
+    } = this.props.playList
     const audio = this.audioRef.current
+    if (!playList.length) {
+      return
+    }
     if (currentIndex !== prevProps.playList.currentIndex) {
       this.getLyric()
     }
-    if (audio && playingState !== prevProps.playList.playing) {
+    if (audio) {
       playingState ? audio.play() : audio.pause()
     }
   }
@@ -322,6 +329,12 @@ class Player extends React.Component {
     })
   }
 
+  handleCloseList = () => {
+    this.setState({
+      showPlayerList: false
+    })
+  }
+
   render() {
     const {
       playList,
@@ -469,37 +482,47 @@ class Player extends React.Component {
         )
       }
       return (
-        <CSSTransition timeout={800} classNames="my-node" in={!fullScreen}>
-          <div className="mini-player">
-            <div
-              className="icon"
-              onClick={() => this.props.saveFullScreen(true)}
-            >
-              <img
-                className={cdStatus}
-                alt="song"
-                src={currentSong.image}
-                height="40"
-                width="40"
-              />
-            </div>
-            <div className="text">
-              <h2 className="name">{currentSong.name}</h2>
-              <p className="desc">{currentSong.singer}</p>
-            </div>
-            <div className="control">
-              <ProgressCircle children={circleIcon()} />
-            </div>
-            <div className="control" onClick={this.showPlayerList}>
-              <i className="icon-playlist" />
-            </div>
+        <div className="mini-player">
+          <div className="icon" onClick={() => this.props.saveFullScreen(true)}>
+            <img
+              className={cdStatus}
+              alt="song"
+              src={currentSong.image}
+              height="40"
+              width="40"
+            />
           </div>
-        </CSSTransition>
+          <div className="text">
+            <h2 className="name">{currentSong.name}</h2>
+            <p className="desc">{currentSong.singer}</p>
+          </div>
+          <div className="control">
+            <ProgressCircle children={circleIcon()} />
+          </div>
+          <div className="control" onClick={this.showPlayerList}>
+            <i className="icon-playlist" />
+          </div>
+        </div>
       )
     }
     return (
       <div className="player">
-        {fullScreen ? normalPlayer() : miniPlayer()}
+        <CSSTransition
+          timeout={800}
+          classNames="my-node"
+          in={!fullScreen}
+          unmountOnExit
+        >
+          {miniPlayer()}
+        </CSSTransition>
+        <CSSTransition
+          timeout={800}
+          classNames="my-node"
+          in={fullScreen}
+          unmountOnExit
+        >
+          {normalPlayer()}
+        </CSSTransition>
         {currentSong ? (
           <audio
             ref={this.audioRef}
@@ -509,7 +532,10 @@ class Player extends React.Component {
             src={currentSong.url}
           />
         ) : null}
-        <PlayerList show={this.state.showPlayerList} />
+        <PlayerList
+          show={this.state.showPlayerList}
+          handleCloseList={this.handleCloseList}
+        />
       </div>
     )
   }

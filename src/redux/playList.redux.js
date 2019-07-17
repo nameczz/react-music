@@ -1,4 +1,5 @@
 import { playMode } from 'common/js/config'
+import { shuffle } from 'common/js/util'
 
 const SAVE_PLAY_LIST = 'SAVE_PLAY_LIST'
 const SAVE_SEQUENCE_LIST = 'SAVE_SEQUENCE_LIST'
@@ -80,11 +81,37 @@ export function savePlayingState(playing) {
   }
 }
 
-export function selectPlay(playList, index) {
+export function selectPlay({
+  playList,
+  index,
+  fullScreen = true,
+  playing = true
+}) {
   return dispatch => {
     dispatch(saveSequenceList(playList))
     dispatch(savePlayList(playList))
     dispatch(saveCurrentIndex(index))
+    dispatch(saveFullScreen(fullScreen))
+    dispatch(savePlayingState(playing))
+  }
+}
+
+export function clearSongs() {
+  let playList = []
+  return dispatch => {
+    dispatch(saveCurrentIndex(-1))
+    dispatch(savePlayList(playList))
+    dispatch(saveSequenceList(playList))
+    dispatch(savePlayingState(false))
+  }
+}
+
+export function randomPlay({ playList }) {
+  return dispatch => {
+    dispatch(saveMode(playMode.randomPlay))
+    dispatch(saveSequenceList(playList))
+    dispatch(savePlayList(shuffle(playList)))
+    dispatch(saveCurrentIndex(0))
     dispatch(saveFullScreen(true))
     dispatch(savePlayingState(true))
   }
