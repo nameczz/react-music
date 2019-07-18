@@ -2,20 +2,37 @@ import React from 'react'
 import BetterScroll from 'components/BetterScroll'
 import PropTypes from 'prop-types'
 import './index.styl'
+
+const ANCHOR_HEIGHT = 18 // 右侧字母表单个的高度
+const TITLE_HEIGHT = 30
 class ListView extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       currentIndex: 0
     }
+    this.scrollY = 0
     this.touch = {}
     this.listHeight = []
     this.listViewRef = React.createRef()
     this.listGroupRef = React.createRef()
+    this.listFixedRef = React.createRef()
+  }
+  componentDidUpdate() {
+    if (!this.listHeight.length) {
+      this._calaculateHeight()
+    }
   }
 
-  componentDidUpdate() {
-    this._calaculateHeight()
+  shouldComponentUpdate(prevPros, prevState) {
+    // 除去初始状态时，尽量保证不会重复渲染
+    if (
+      this.listHeight.length &&
+      this.state.currentIndex === prevState.currentIndex
+    ) {
+      return false
+    }
+    return true
   }
 
   handleShortcutTouchStart = e => {
@@ -27,8 +44,17 @@ class ListView extends React.Component {
     this.touch.anchorIndex = anchorIndex
     this._scrollTo(anchorIndex)
   }
+
   handleShortcutTouchMove = e => {
-    console.log(e)
+    let firstTouch = e.touches[0]
+    let delta = ((firstTouch.pageY - this.touch.y1) / ANCHOR_HEIGHT) | 0
+    let anchorIndex = parseInt(this.touch.anchorIndex) + delta
+    this._scrollTo(anchorIndex)
+  }
+
+  handleScroll = e => {
+    this.scrollY = e.y
+    this._calaculateCurrentIndex(e.y)
   }
 
   _scrollTo = index => {
@@ -41,18 +67,19 @@ class ListView extends React.Component {
     } else if (index > this.listHeight.length - 2) {
       index = this.listHeight.length - 2
     }
-    this._calaculateCurrentIndex(-this.listHeight[index])
+    this.scrollY = -this.listHeight[index]
+    this._calaculateCurrentIndex(this.scrollY)
     this.listViewRef.current.scrollToElement(list[index], 0)
   }
 
-  // _calaculateDiff = (diff)=>{
-  //   let fixedTop = val > 0 && val < TITLE_HEIGHT ? val - TITLE_HEIGHT : 0
-  //     if (this.fixedTop === fixedTop) {
-  //       return
-  //     }
-  //     this.fixedTop = fixedTop
-  //     this.$refs.fixed.style.transform = `translate3d(0, ${fixedTop}px, 0)`
-  // }
+  _calaculateDiff = diff => {
+    let fixedTop = diff > 0 && diff < TITLE_HEIGHT ? diff - TITLE_HEIGHT : 0
+    if (this.fixedTop === fixedTop) {
+      return
+    }
+    this.fixedTop = fixedTop
+    this.listFixedRef.current.style.transform = `translate3d(0, ${fixedTop}px, 0)`
+  }
 
   _calaculateCurrentIndex = scrollY => {
     const listHeight = this.listHeight
@@ -70,7 +97,7 @@ class ListView extends React.Component {
         this.setState({
           currentIndex: i
         })
-        // this.diff = height2 + scrollY
+        this._calaculateDiff(height2 + scrollY)
         return
       }
     }
@@ -96,13 +123,19 @@ class ListView extends React.Component {
     console.log(this.listHeight)
   }
   render() {
-    const { data } = this.props
+    const { data, selectItem } = this.props
     const { currentIndex } = this.state
     const shortcutList = data.map(v => v.title.substring(0, 1))
+    const fixedTitle =
+      this.scrollY < 0
+        ? data[currentIndex]
+          ? data[currentIndex].title
+          : ''
+        : ''
+    console.log(fixedTitle)
     if (!data || !data.length) {
       return null
     }
-    console.log(data)
     const content = () => {
       return (
         <React.Fragment>
@@ -117,7 +150,9 @@ class ListView extends React.Component {
                         <li
                           key={singer.name}
                           className="list-group-item"
-                          onClick={() => {}}
+                          onClick={() => {
+                            selectItem(singer)
+                          }}
                         >
                           <img
                             className="avatar"
@@ -154,6 +189,14 @@ class ListView extends React.Component {
               })}
             </ul>
           </div>
+
+          <div
+            className="list-fixed"
+            ref={this.listFixedRef}
+            style={{ display: fixedTitle ? 'inherit' : 'none' }}
+          >
+            <h1 className="fixed-title">{fixedTitle}</h1>
+          </div>
         </React.Fragment>
       )
     }
@@ -162,6 +205,7 @@ class ListView extends React.Component {
         ref={this.listViewRef}
         className="listview"
         children={content()}
+        handleScroll={this.handleScroll}
         probeType={3}
       />
     )
@@ -169,11 +213,13 @@ class ListView extends React.Component {
 }
 
 ListView.propTypes = {
-  data: PropTypes.array
+  data: PropTypes.array,
+  selectItem: PropTypes.func
 }
 
 ListView.defaultProps = {
-  data: []
+  data: [],
+  selectItem: () => {}
 }
 
 export default ListView

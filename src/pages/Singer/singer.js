@@ -1,14 +1,21 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import ListView from 'components/ListView/'
 import { getSingerList } from 'api/singer'
 import { ERR_OK } from 'api/config'
 import Singer from 'common/js/singer'
-
-import './index.styl'
+import { saveSinger } from '@/redux/singer.redux'
+import './singer.styl'
 
 const HOT_NAME = '热门'
 const HOT_LEN = 10
 
+@connect(
+  state => state,
+  { saveSinger }
+)
+@withRouter
 class SingerPage extends React.Component {
   constructor(props) {
     super(props)
@@ -64,6 +71,11 @@ class SingerPage extends React.Component {
     return hot.concat(ret)
   }
 
+  handleSelectSinger = singer => {
+    this.props.history.push(`/singer/${singer.id}`)
+    this.props.saveSinger(singer)
+  }
+
   _getSingerList() {
     getSingerList().then(res => {
       if (res.code === ERR_OK) {
@@ -76,7 +88,10 @@ class SingerPage extends React.Component {
   render() {
     return (
       <div className="singer">
-        <ListView data={this.state.singers} />
+        <ListView
+          data={this.state.singers}
+          selectItem={this.handleSelectSinger}
+        />
       </div>
     )
   }

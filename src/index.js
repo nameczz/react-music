@@ -14,6 +14,7 @@ import Tab from './components/Tab/index'
 import Recommend from './pages/Recommend'
 import Disc from './pages/Recommend/disc'
 import Singer from './pages/Singer/singer'
+import SingerDetail from './pages/Singer/detail'
 import Player from './components/Player'
 // import * as serviceWorker from './serviceWorker'
 
@@ -34,8 +35,8 @@ ReactDOM.render(
         <Route path="/" exact component={Recommend} />
         <Route path="/recommend" exact component={Recommend} />
         <Route path="/recommend/:id" component={Disc} />
-        <Route path="/singer" component={Singer} />
-        {/* <Route path="/singer/:id" component={Singer}></Route> */}
+        <Route path="/singer" exact component={Singer} />
+        <Route path="/singer/:id" component={SingerDetail} />
       </Switch>
       <Player />
     </Router>
