@@ -14,6 +14,7 @@ class BetterScroll extends React.Component {
       this.refresh()
     }, this.refreshTime)
   }
+
   initScroll() {
     if (!this.refs.wrapper) {
       return
@@ -27,6 +28,14 @@ class BetterScroll extends React.Component {
       let me = this
       this.scroll.on('scroll', pos => {
         me.props.handleScroll(pos)
+      })
+    }
+
+    if (this.props.handleScrollToEnd) {
+      this.scroll.on('scrollEnd', () => {
+        if (this.scroll.y <= this.scroll.maxScrollY + 50) {
+          this.props.handleScrollToEnd()
+        }
       })
     }
   }
@@ -68,6 +77,7 @@ BetterScroll.propTypes = {
   probeType: PropTypes.number,
   click: PropTypes.bool,
   handleScroll: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
+  handleScrollToEnd: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
   pullup: PropTypes.bool,
   beforeScroll: PropTypes.bool,
   refreshTime: PropTypes.number,
@@ -79,6 +89,7 @@ BetterScroll.defaultProps = {
   probeType: 1,
   click: true,
   handleScroll: false,
+  handleScrollToEnd: false,
   pullup: false,
   beforeScroll: false,
   refreshTime: 20

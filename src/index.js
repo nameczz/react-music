@@ -15,6 +15,9 @@ import Recommend from './pages/Recommend'
 import Disc from './pages/Recommend/disc'
 import Singer from './pages/Singer/singer'
 import SingerDetail from './pages/Singer/detail'
+import Rank from './pages/Rank/rank'
+import RankList from './pages/Rank/list'
+import Search from './pages/Search/search'
 import Player from './components/Player'
 // import * as serviceWorker from './serviceWorker'
 
@@ -37,6 +40,9 @@ ReactDOM.render(
         <Route path="/recommend/:id" component={Disc} />
         <Route path="/singer" exact component={Singer} />
         <Route path="/singer/:id" component={SingerDetail} />
+        <Route path="/rank" exact component={Rank} />
+        <Route path="/rank/:id" component={RankList} />
+        <Route path="/search" component={Search} />
       </Switch>
       <Player />
     </Router>

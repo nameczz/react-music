@@ -141,7 +141,6 @@ class PlayerList extends React.Component {
         <div className="playlist">
           <CSSTransition
             timeout={300}
-            dismissible
             classNames="list-translate"
             in={this.props.show}
           >

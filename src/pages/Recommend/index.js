@@ -2,6 +2,7 @@
 import React from 'react'
 import { Carousel } from 'antd-mobile'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
 import { saveDisc } from '@/redux/disc.redux'
 import { getRecommend, getdiscList } from 'api/recommend'
 import { ERR_OK } from 'api/config'
@@ -12,6 +13,7 @@ import './index.styl'
   state => state,
   { saveDisc }
 )
+@withRouter
 class Recommend extends React.Component {
   constructor(props) {
     super(props)

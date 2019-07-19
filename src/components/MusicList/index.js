@@ -1,6 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
+import PropTypes from 'prop-types'
+
 import SongList from 'components/SongList'
 import BetterScroll from 'components/BetterScroll'
 import { selectPlay, randomPlay } from '@/redux/playList.redux'
@@ -116,6 +118,12 @@ class MusicList extends React.Component {
       </div>
     )
   }
+}
+
+MusicList.propTypes = {
+  title: PropTypes.string,
+  bgImage: PropTypes.string,
+  songs: PropTypes.array
 }
 
 export default MusicList
