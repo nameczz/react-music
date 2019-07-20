@@ -14,7 +14,7 @@ import PlayerList from 'components/PlayerList'
 import Lyric from 'lyric-parser'
 import { playMode } from 'common/js/config'
 import { shuffle } from 'common/js/util'
-import {  CSSTransition } from 'react-transition-group'
+import { CSSTransition } from 'react-transition-group'
 import './index.styl'
 
 @connect(
@@ -42,7 +42,12 @@ class Player extends React.Component {
     this.touch = {}
   }
 
-  shouldComponentUpdate(){
+  componentDidMount() {
+    console.log('mount')
+    this.getLyric()
+  }
+
+  shouldComponentUpdate() {
     const {
       playList,
       currentIndex,
@@ -61,7 +66,7 @@ class Player extends React.Component {
         this.setState({
           currentLineNum: 0,
           playingLyric: '',
-          currentTime:0
+          currentTime: 0
         })
         return false
       }
@@ -75,13 +80,14 @@ class Player extends React.Component {
       mode === playMode.sequence
         ? 'icon-sequence'
         : mode === playMode.loop
-        ? 'icon-loop'
-        : 'icon-random'
+          ? 'icon-loop'
+          : 'icon-random'
 
     return true
   }
 
   componentDidUpdate(prevProps) {
+    console.log('did update')
     const {
       playing: playingState,
       currentIndex,
@@ -91,11 +97,9 @@ class Player extends React.Component {
     if (!playList.length) {
       return
     }
-    if (currentIndex !== prevProps.playList.currentIndex) {
-      this.timer && clearTimeout(this.timer)
-      this.timer = setTimeout(()=>{
-        this.getLyric()
-      },1000)
+    console.log(currentIndex,prevProps.playList.currentIndex)
+    if (!this.state.currentLyric || currentIndex !== prevProps.playList.currentIndex) {
+      this.getLyric()
     }
     if (audio) {
       playingState ? audio.play() : audio.pause()
@@ -179,10 +183,11 @@ class Player extends React.Component {
 
   getLyric = () => {
     const { playing, currentSong } = this.props.playList
+    if(!currentSong) return
     currentSong
       .getLyric()
       .then(lyric => {
-        console.log(lyric)
+        if (currentSong.lyric !== lyric) return
         this.setState(
           {
             currentLyric: new Lyric(lyric, this.handleLyric)
@@ -379,7 +384,7 @@ class Player extends React.Component {
     if (!playList.length) {
       return null
     }
-   
+
 
     const percent = currentTime / currentSong.duration
 
