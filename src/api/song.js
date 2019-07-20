@@ -51,10 +51,11 @@ export function getVKey(songmid, filename) {
 }
 
 export function getSongsUrl(songs) {
-  const url = debug
-    ? '/api/getPurlUrl'
-    : 'http://ustbhuangyi.com/music/api/getPurlUrl'
+  // const url = debug
+  //   ? '/api/getPurlUrl'
+  //   : 'http://ustbhuangyi.com/music/api/getPurlUrl'
 
+  const url = '/api/getPurlUrl'
   let mids = []
   let types = []
 
