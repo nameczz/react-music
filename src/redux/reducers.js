@@ -8,5 +8,5 @@ export default combineReducers({
   disc,
   playList,
   singer,
-  history
+  musicHistory:history
 })

@@ -5,7 +5,7 @@ import Loading from 'components/Loading'
 import { search } from 'api/search'
 import { ERR_OK } from 'api/config'
 import { createSong, isValidMusic, processSongsUrl } from 'common/js/song'
-import Singer from 'common/js/singer'
+// import Singer from 'common/js/singer'
 
 import './index.styl'
 

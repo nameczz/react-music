@@ -18,6 +18,7 @@ class RecommendDetail extends React.Component {
     }
   }
   componentWillMount() {
+    console.log(this.props)
     if (!this.props.disc.disc.dissid) {
       this.props.history.push('/recommend')
       return
@@ -27,7 +28,7 @@ class RecommendDetail extends React.Component {
 
   getSongList() {
     if (!this.props.disc.disc.dissid) {
-      this.$router.push('/recommend')
+      this.props.history.push('/recommend')
       return
     }
     getSongList(this.props.disc.disc.dissid)

@@ -14,7 +14,7 @@ import PlayerList from 'components/PlayerList'
 import Lyric from 'lyric-parser'
 import { playMode } from 'common/js/config'
 import { shuffle } from 'common/js/util'
-import { Transition, CSSTransition } from 'react-transition-group'
+import {  CSSTransition } from 'react-transition-group'
 import './index.styl'
 
 @connect(
@@ -42,6 +42,33 @@ class Player extends React.Component {
     this.touch = {}
   }
 
+  shouldComponentUpdate(){
+    const {
+      playList,
+      currentIndex,
+      currentSong
+    } = this.props.playList
+    const {
+      currentLyric
+    } = this.state
+    const newSong = playList[currentIndex] || {}
+    if (!playList.length) {
+      return null
+    }
+    if (newSong.id && newSong.id !== currentSong.id) {
+      if (currentLyric) {
+        currentLyric.stop() // 先停掉旧的歌词
+        this.setState({
+          currentLineNum: 0,
+          playingLyric: '',
+          currentTime:0
+        })
+        return false
+      }
+    }
+    return true
+  }
+
   getSnapshotBeforeUpdate() {
     const { mode } = this.props.playList
     this.iconMode =
@@ -65,7 +92,10 @@ class Player extends React.Component {
       return
     }
     if (currentIndex !== prevProps.playList.currentIndex) {
-      this.getLyric()
+      this.timer && clearTimeout(this.timer)
+      this.timer = setTimeout(()=>{
+        this.getLyric()
+      },1000)
     }
     if (audio) {
       playingState ? audio.play() : audio.pause()
@@ -77,9 +107,7 @@ class Player extends React.Component {
   // }
 
   middleTouchStart = e => {
-    console.log(e)
     const touch = e.touches[0]
-    console.log(touch)
     this.touch.initiated = true
     this.touch.startX = touch.pageX
     this.touch.startY = touch.pageY
@@ -338,7 +366,6 @@ class Player extends React.Component {
   render() {
     const {
       playList,
-      currentIndex,
       fullScreen,
       playing,
       currentSong
@@ -349,15 +376,10 @@ class Player extends React.Component {
       currentShow,
       currentTime
     } = this.state
-    const newSong = playList[currentIndex] || {}
     if (!playList.length) {
       return null
     }
-    if (newSong.id && newSong.id !== currentSong.id) {
-      if (currentLyric) {
-        currentLyric.stop() // 先停掉旧的歌词
-      }
-    }
+   
 
     const percent = currentTime / currentSong.duration
 
@@ -526,7 +548,7 @@ class Player extends React.Component {
         {currentSong ? (
           <audio
             ref={this.audioRef}
-            onCanPlay={this.ready}
+            onPlay={this.ready}
             onEnded={this.end}
             onTimeUpdate={this.updateTime}
             src={currentSong.url}
