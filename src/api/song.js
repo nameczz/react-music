@@ -3,7 +3,6 @@ import axios from 'axios'
 import jsonp from 'common/js/jsonp'
 import { getUid } from 'common/js/uid'
 import { ERR_OK } from 'api/config'
-const debug = process.env.NODE_ENV !== 'production'
 
 export function getLyric(mid) {
   const url = '/api/lyric'

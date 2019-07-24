@@ -25,6 +25,7 @@ class MusicList extends React.Component {
     this.bgImageRef = React.createRef()
     this.layerRef = React.createRef()
     this.playRef = React.createRef()
+    this.bsRef = React.createRef()
   }
   componentDidMount() {
     this.imageHeight = this.bgImageRef.current.clientHeight
@@ -36,7 +37,20 @@ class MusicList extends React.Component {
     })
   }
 
+  componentDidUpdate() {
+    this.handlePlayList()
+  }
+
+  handlePlayList = () => {
+    if (!this.bsRef.current) return
+    const bottom = this.props.playList.playList.length ? '60px' : ''
+    this.bsRef.current.refs.wrapper.style.bottom = bottom
+  }
+
   handleScroll = pos => {
+    if (!this.layerRef.current) {
+      return
+    }
     const scrollY = pos.y
     let translateY = Math.max(this.minTranslateY, scrollY)
     let zIndex = 0
@@ -74,7 +88,6 @@ class MusicList extends React.Component {
 
   render() {
     const { title, bgImage, songs } = this.props
-    console.log(songs.length)
     const content = () => {
       return (
         <div className="song-list-wrapper">
@@ -83,7 +96,7 @@ class MusicList extends React.Component {
       )
     }
     return (
-      <div className="music-list">
+      <div className="music-list" ref={this.musicListRef}>
         <div className="back" onClick={this.handleBackClick}>
           <i className="icon-back" />
         </div>
@@ -111,7 +124,7 @@ class MusicList extends React.Component {
           className="list"
           top={this.state.top}
           children={content()}
-          ref="bsScroll"
+          ref={this.bsRef}
           probeType={3}
           handleScroll={this.handleScroll}
         />

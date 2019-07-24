@@ -87,12 +87,58 @@ export function selectPlay({
   fullScreen = true,
   playing = true
 }) {
-  return dispatch => {
+  return (dispatch, getState) => {
+    const { mode } = getState().playList
+    if (mode === playMode.random) {
+      let randomList = shuffle(playList)
+      dispatch(savePlayList(randomList))
+      index = findIndex(randomList, playList[index])
+    } else {
+      dispatch(savePlayList(playList))
+    }
     dispatch(saveSequenceList(playList))
-    dispatch(savePlayList(playList))
     dispatch(saveCurrentIndex(index))
     dispatch(saveFullScreen(fullScreen))
     dispatch(savePlayingState(playing))
+  }
+}
+
+export function insertSong(song) {
+  return (dispatch, getState) => {
+    let {
+      playList,
+      sequenceList,
+      currentIndex,
+      currentSong
+    } = getState().playList
+    let fpIndex = findIndex(playList, song) // 要插入的点位是否已经存在
+    currentIndex++
+    playList.splice(currentIndex, 0, song)
+    if (fpIndex > -1) {
+      if (currentIndex > fpIndex) {
+        playList.splice(fpIndex, 1)
+        currentIndex--
+      } else {
+        playList.splice(fpIndex + 1, 1)
+      }
+    }
+
+    let currentSIndex = findIndex(sequenceList, currentSong) + 1
+    let fsIndex = findIndex(sequenceList, song)
+    sequenceList.splice(currentSIndex, 0, song)
+
+    if (fsIndex > -1) {
+      if (currentSIndex > fsIndex) {
+        sequenceList.splice(fsIndex, 1)
+      } else {
+        sequenceList.splice(fsIndex + 1, 1)
+      }
+    }
+    dispatch(savePlayList(playList))
+    dispatch(saveSequenceList(sequenceList))
+    dispatch(saveCurrentIndex(currentIndex))
+    dispatch(saveFullScreen(true))
+    dispatch(savePlayingState(true))
   }
 }
 
@@ -115,4 +161,11 @@ export function randomPlay({ playList }) {
     dispatch(saveFullScreen(true))
     dispatch(savePlayingState(true))
   }
+}
+
+function findIndex(list, song) {
+  console.log(list)
+  return list.findIndex(item => {
+    return item.id === song.id
+  })
 }

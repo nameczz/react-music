@@ -17,7 +17,7 @@ import './index.styl'
 class Recommend extends React.Component {
   constructor(props) {
     super(props)
-
+    this.recommendRef = React.createRef()
     this.state = {
       recommends: [],
       discList: [],
@@ -28,6 +28,16 @@ class Recommend extends React.Component {
   componentDidMount() {
     this.getRecommend()
     this.getDiscList()
+  }
+
+  componentDidUpdate() {
+    this.handlePlayList()
+  }
+
+  handlePlayList = () => {
+    if (!this.recommendRef.current) return
+    const bottom = this.props.playList.playList.length ? '60px' : ''
+    this.recommendRef.current.style.bottom = bottom
   }
 
   getRecommend = () => {
@@ -116,7 +126,7 @@ class Recommend extends React.Component {
       return null
     }
     return (
-      <div className="recommend">
+      <div className="recommend" ref={this.recommendRef}>
         <BetterScroll className="recommend-content" children={content()} />
       </div>
     )

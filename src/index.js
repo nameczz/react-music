@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import { createStore, applyMiddleware, compose } from 'redux'
 import thunk from 'redux-thunk' // 中间件 redux-thunk中间件，改造store.dispatch，使得后者可以接受函数作为参数。
 import { Provider } from 'react-redux' // 路由关联redux
+import { TransitionGroup, CSSTransition } from 'react-transition-group'
 import './index.css'
 import './common/stylus/index.styl'
 import Reducers from './redux/reducers'
@@ -34,16 +35,28 @@ ReactDOM.render(
     <Router>
       <MHeader />
       <Tab />
+      <Route
+        render={({ location }) => (
+          <TransitionGroup>
+            <CSSTransition key={location.key} timeout={300} classNames="slide">
+              <Switch location={location}>
+                <Route path="/recommend/:id" component={Disc} />
+                <Route path="/singer/:id" component={SingerDetail} />
+                <Route path="/search/:id" component={SingerDetail} />
+                <Route path="/rank/:id" component={RankList} />
+              </Switch>
+            </CSSTransition>
+          </TransitionGroup>
+        )}
+      />
       <Switch>
         <Route path="/" exact component={Recommend} />
         <Route path="/recommend" exact component={Recommend} />
-        <Route path="/recommend/:id" component={Disc} />
         <Route path="/singer" exact component={Singer} />
-        <Route path="/singer/:id" component={SingerDetail} />
         <Route path="/rank" exact component={Rank} />
-        <Route path="/rank/:id" component={RankList} />
         <Route path="/search" component={Search} />
       </Switch>
+
       <Player />
     </Router>
   </Provider>,

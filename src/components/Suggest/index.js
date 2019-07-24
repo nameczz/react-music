@@ -1,17 +1,25 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import BetterScroll from 'components/BetterScroll'
 import Loading from 'components/Loading'
 import { search } from 'api/search'
 import { ERR_OK } from 'api/config'
 import { createSong, isValidMusic, processSongsUrl } from 'common/js/song'
-// import Singer from 'common/js/singer'
-
+import Singer from 'common/js/singer'
+import { saveSinger } from '@/redux/singer.redux'
+import { insertSong } from '@/redux/playList.redux'
 import './index.styl'
 
 const TYPE_SINGER = 'singer'
 const PERPAGE = 20
 
+@connect(
+  state => state,
+  { saveSinger, insertSong }
+)
+@withRouter
 class Suggest extends React.Component {
   state = {
     page: 1,
@@ -31,7 +39,19 @@ class Suggest extends React.Component {
     }
   }
 
-  selectItem = () => {}
+  selectItem = item => {
+    if (item.type === TYPE_SINGER) {
+      const singer = new Singer({
+        id: item.singermid,
+        name: item.singername
+      })
+      this.props.history.push(`/search/${singer.id}`)
+      this.props.saveSinger(singer)
+    } else {
+      this.props.insertSong(item)
+    }
+  }
+
   getIconCls = item => {
     if (item.type === TYPE_SINGER) {
       return 'icon-mine'
@@ -140,7 +160,9 @@ class Suggest extends React.Component {
                 <li
                   className="suggest-item"
                   key={`${item.id}${item.mid}`}
-                  onClick={this.selectItem}
+                  onClick={() => {
+                    this.selectItem(item)
+                  }}
                 >
                   <div className="icon">
                     <i className={this.getIconCls(item)} />

@@ -8,8 +8,9 @@ import './disc.styl'
 
 import { getSongList } from 'api/recommend'
 
-@withRouter
 @connect(state => state)
+@withRouter
+
 class RecommendDetail extends React.Component {
   constructor(props) {
     super(props)
@@ -26,7 +27,7 @@ class RecommendDetail extends React.Component {
     this.getSongList()
   }
 
-  getSongList() {
+  getSongList = ()=> {
     if (!this.props.disc.disc.dissid) {
       this.props.history.push('/recommend')
       return

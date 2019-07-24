@@ -19,6 +19,7 @@ const HOT_LEN = 10
 class SingerPage extends React.Component {
   constructor(props) {
     super(props)
+    this.singerRef = React.createRef()
     this.state = {
       singers: []
     }
@@ -26,6 +27,16 @@ class SingerPage extends React.Component {
 
   componentWillMount() {
     this._getSingerList()
+  }
+
+  componentDidUpdate() {
+    this.handlePlayList()
+  }
+
+  handlePlayList = () => {
+    if (!this.singerRef.current) return
+    const bottom = this.props.playList.playList.length ? '60px' : ''
+    this.singerRef.current.style.bottom = bottom
   }
 
   _normalizeSinger(list) {
@@ -87,7 +98,7 @@ class SingerPage extends React.Component {
   }
   render() {
     return (
-      <div className="singer">
+      <div className="singer" ref={this.singerRef}>
         <ListView
           data={this.state.singers}
           selectItem={this.handleSelectSinger}

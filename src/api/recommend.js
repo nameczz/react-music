@@ -2,7 +2,6 @@ import jsonp from 'common/js/jsonp'
 import { commonParams, options } from './config'
 import axios from 'axios'
 
-const debug = process.env.NODE_ENV !== 'production'
 export function getRecommend() {
   const url =
     'https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg'

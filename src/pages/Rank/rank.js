@@ -13,6 +13,7 @@ import './rank.styl'
 )
 @withRouter
 class Rank extends React.Component {
+  rankRef = React.createRef()
   state = {
     topList: []
   }
@@ -21,7 +22,16 @@ class Rank extends React.Component {
     this._getTopList()
   }
 
-  selectItem(item) {
+  componentDidUpdate() {
+    this.handlePlayList(this.props.playList.playList)
+  }
+
+  handlePlayList = playList => {
+    const bottom = playList.length ? '60px' : ''
+    this.rankRef.current.style.bottom = bottom
+  }
+
+  selectItem = item => {
     this.props.history.push(`/rank/${item.id}`)
     this.props.saveTopList(item)
   }
@@ -75,11 +85,10 @@ class Rank extends React.Component {
       )
     }
     return (
-      <div className="rank">
+      <div className="rank" ref={this.rankRef}>
         <BetterScroll className="toplist" children={content()} />
       </div>
     )
   }
 }
-
 export default Rank

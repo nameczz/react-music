@@ -9,9 +9,24 @@ import './search.styl'
 class Search extends React.Component {
   shortCutRef = React.createRef()
   searchBoxRef = React.createRef()
+  searchResultRef = React.createRef()
+  shortCutWrapperRef = React.createRef()
   state = {
     query: ''
   }
+
+  componentDidUpdate() {
+    this.handlePlayList()
+  }
+
+  handlePlayList = () => {
+    if (!this.searchResultRef.current || !this.shortCutWrapperRef.current)
+      return
+    const bottom = this.props.playList.playList.length ? '60px' : ''
+    this.searchResultRef.current.style.bottom = bottom
+    this.shortCutWrapperRef.current.style.bottom = bottom
+  }
+
   getSongsByQuery = query => {
     this.setState({
       query
@@ -36,11 +51,11 @@ class Search extends React.Component {
         </div>
 
         {this.state.query ? (
-          <div className="search-result">
+          <div className="search-result" ref={this.searchResultRef}>
             <Suggest query={this.state.query} />
           </div>
         ) : (
-          <div className="shortcut-wrapper">
+          <div className="shortcut-wrapper" ref={this.shortCutWrapperRef}>
             <BetterScroll
               className="shortcut"
               ref={this.shortCutRef}
