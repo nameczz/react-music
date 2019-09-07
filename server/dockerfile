@@ -1,0 +1,10 @@
+FROM node:10.16
+COPY . /app
+WORKDIR /app
+RUN npm install -g cnpm --registry=https://registry.npm.taobao.org
+RUN cnpm install
+RUN cnpm install -g nodemon
+ENV TimeZone=Asia/Shanghai   
+RUN ln -snf /usr/share/zoneinfo/$TimeZone /etc/localtime && echo $TimeZone > /etc/timezone
+EXPOSE 3000
+CMD nodemon index.js

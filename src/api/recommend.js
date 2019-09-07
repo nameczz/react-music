@@ -16,7 +16,7 @@ export function getRecommend() {
 }
 
 export function getdiscList() {
-  const url = '/api/getPlayList'
+  const url = `${process.env.REACT_APP_BASE_URL}/api/getPlayList`
 
   const data = Object.assign({}, commonParams, {
     platform: 'yqq',
@@ -40,12 +40,7 @@ export function getdiscList() {
 }
 
 export function getSongList(disstid) {
-  // const url = debug
-  //   ? '/api/getCdInfo'
-  //   : 'http://ustbhuangyi.com/music/api/getCdInfo'
-
-  const url = '/api/getCdInfo'
-
+  const url = `${process.env.REACT_APP_BASE_URL} /api/getCdInfo`
   const data = Object.assign({}, commonParams, {
     disstid,
     type: 1,

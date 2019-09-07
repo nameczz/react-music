@@ -5,7 +5,7 @@ import { getUid } from 'common/js/uid'
 import { ERR_OK } from 'api/config'
 
 export function getLyric(mid) {
-  const url = '/api/lyric'
+  const url = `${process.env.REACT_APP_BASE_URL}/api/lyric`
   const data = Object.assign({}, commonParams, {
     songmid: mid,
     pcachetime: +new Date(),
@@ -54,7 +54,7 @@ export function getSongsUrl(songs) {
   //   ? '/api/getPurlUrl'
   //   : 'http://ustbhuangyi.com/music/api/getPurlUrl'
 
-  const url = '/api/getPurlUrl'
+  const url = `${process.env.REACT_APP_BASE_URL}/api/getPurlUrl`
   let mids = []
   let types = []
 
