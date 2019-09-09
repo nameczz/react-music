@@ -11,6 +11,7 @@ class ProgressBar extends React.Component {
     this.touch = {}
   }
   progressTouchStart = e => {
+    console.log(e.touches)
     this.touch.initiated = true
     this.touch.startX = e.touches[0].pageX
     this.touch.left = this.refs.progress.clientWidth
@@ -35,9 +36,11 @@ class ProgressBar extends React.Component {
   }
 
   progressClick = e => {
-    // 说有bug ， 暂时没重现，不改
-    console.log(e.offsetX)
-    this._offset(e.offsetX)
+    const endX = e.touches[0].pageX
+    const startX = Number(this.refs.progress.style.width.replace('px', '')) + 80 - progressBtnWidth
+    const offset = Math.abs(endX - startX)
+    console.log(startX, endX, offset)
+    this._offset(offset)
     this._triggerPercent()
   }
 
@@ -54,7 +57,6 @@ class ProgressBar extends React.Component {
     const barWidth = this.refs.progressBar.clientWidth - progressBtnWidth
     const percent = this.refs.progress.clientWidth / barWidth
     this.props.percentChanges(percent)
-    // this.$emit('percentChanges', percent)
   }
   _offset(offsetWidth) {
     this.refs.progress.style.width = `${offsetWidth}px`
@@ -65,9 +67,8 @@ class ProgressBar extends React.Component {
     this.handlePercentChange()
     return (
       <div
-        className="progress-bar"
+        className="progress-bar "
         ref="progressBar"
-        onClick={this.progressClick}
       >
         <div className="bar-inner">
           <div className="progress" ref="progress" />

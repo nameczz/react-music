@@ -4,7 +4,7 @@ const axios = require('axios')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 
-const port = 8090
+const port = 3000
 
 const app = express()
 

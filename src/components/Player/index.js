@@ -43,7 +43,6 @@ class Player extends React.Component {
   }
 
   componentDidMount() {
-    console.log('mount')
     this.getLyric()
   }
 
@@ -87,7 +86,6 @@ class Player extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    console.log('did update')
     const {
       playing: playingState,
       currentIndex,
@@ -97,7 +95,6 @@ class Player extends React.Component {
     if (!playList.length) {
       return
     }
-    console.log(currentIndex,prevProps.playList.currentIndex)
     if (!this.state.currentLyric || currentIndex !== prevProps.playList.currentIndex) {
       this.getLyric()
     }
